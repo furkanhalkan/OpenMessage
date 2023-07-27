@@ -7,6 +7,7 @@ import EnablePermissionsScreen from './pages/EnablePermissionsScreen';
 import PhoneVerificationScreen from './pages/PhoneVerificationScreen';
 import CodeVerificationScreen from './pages/CodeVerificationScreen';
 import RegisterScreen from './pages/RegisterScreen';
+import HomeScreen from './pages/HomeScreen';
 
 const Stack = createStackNavigator();
 
@@ -28,7 +29,7 @@ const App = () => {
         <Stack.Screen name="PhoneVerification" component={PhoneVerificationScreen} options={{ headerShown: false }} />
         <Stack.Screen name="CodeVerification" component={CodeVerificationScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
-       
+        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

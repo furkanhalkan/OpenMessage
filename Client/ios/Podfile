@@ -31,6 +31,7 @@ target 'OpenMessage' do
   config = use_native_modules!
 
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications/Permission-Notifications.podspec"
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
   # Flags change depending on the env values.
   flags = get_default_flags()

@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import CfButton from '../components/Button';
 import CfInput from '../components/Input';
-import {RootStackParamList } from '../types';
+import {CodeVerificationScreenNavigationProp, CodeVerificationScreenRouteProp } from '../types';
 import { StackScreenProps } from '@react-navigation/stack';
 
 
-type Props = StackScreenProps<RootStackParamList, 'CodeVerification'>;
+interface Props {
+  navigation: CodeVerificationScreenNavigationProp;
+  route: CodeVerificationScreenRouteProp;
+}
 
 
 function CodeVerificationScreen({ route, navigation }: Props) {

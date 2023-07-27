@@ -11,6 +11,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const handleRegister = () => {
     // Registration logic will be placed here
     console.log('User registered with information: ', username, fullName, email);
+    navigation.navigate('Home');
   };
 
   return (
