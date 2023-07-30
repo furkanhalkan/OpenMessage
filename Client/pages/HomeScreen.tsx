@@ -35,6 +35,7 @@ export default function HomeScreen() {
           tabBarStyle: {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
+            paddingBottom:7
           },
         })}
       >
