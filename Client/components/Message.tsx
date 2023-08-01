@@ -1,5 +1,6 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export interface User {
     name: string;
@@ -17,6 +18,8 @@ interface MessageProps {
 }
 
 const Message: React.FC<MessageProps> = ({ user, latestMessage }) => {
+    const navigation = useNavigation();
+
     const getAvatar = () => {
       if (user.avatar) {
         return { uri: user.avatar };
@@ -27,7 +30,8 @@ const Message: React.FC<MessageProps> = ({ user, latestMessage }) => {
     };
   
     return (
-      <View style={styles.messageContainer}>
+      <TouchableOpacity style={styles.messageContainer} onPress={() => navigation.navigate('Chat', { user })}>
+
         {getAvatar().uri ? (
           <View style={styles.avatarContainer}>
             <Image source={getAvatar()} style={styles.avatar} />
@@ -50,7 +54,7 @@ const Message: React.FC<MessageProps> = ({ user, latestMessage }) => {
             </View>
           )}
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
   
@@ -60,7 +64,6 @@ const Message: React.FC<MessageProps> = ({ user, latestMessage }) => {
       flexDirection: 'row',
       marginBottom: 10,
       alignItems: 'center',
-      borderTopWidth: 1,
       borderBottomWidth: 1,
       borderColor: 'grey',
       justifyContent: 'space-between',

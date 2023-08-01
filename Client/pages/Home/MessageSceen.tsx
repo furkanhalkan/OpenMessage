@@ -23,6 +23,18 @@ const MessageScreen: React.FC = () => {
       },
       latestMessage: 'Merhaba, nasılsın?',
     },
+    {
+      user: {
+        name: 'Ahmet',
+        lastName: 'Yılmaz',
+        username: 'ahmet_yilmaz',
+        avatar: '',
+        lastMessageTime: '30.07.2023',
+        notificationCount: 1,
+        onlineStatus: 'online'
+      },
+      latestMessage: 'Merhaba, nasılsın?',
+    },
     // Diğer mesajları buraya ekleyebilirsiniz.
   ];
 
