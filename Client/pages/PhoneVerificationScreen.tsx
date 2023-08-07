@@ -32,7 +32,7 @@ function PhoneVerificationScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>OpenMessage'ye Hoş Geldiniz.</Text>
-      <Text style={styles.instructionsText}>Telefon numaranızı girin</Text>
+      <Text style={styles.instructionsText}>Hesabını oluşturmak veya varolan hesabına giriş yapmak için telefon numaranı gir.</Text>
       
       <CfInput value={phoneNumber} 
       placeholder='Telefon Numaranızı Yazınız' 
@@ -49,17 +49,19 @@ const styles = StyleSheet.create({
       flex: 1, 
       justifyContent: 'center', 
       alignItems: 'center', 
-      backgroundColor: '#000'
+      backgroundColor: '#fff',
+      padding:16
     },
     welcomeText: {
-      color: '#fff', 
+      color: '#000', 
       fontSize: 20, 
       marginBottom: 20
     },
     instructionsText: {
-      color: '#fff', 
+      color: '#918FB7', 
       fontSize: 15, 
-      marginBottom: 20
+      marginBottom: 20,
+      textAlign:'center'
     },
   });
 

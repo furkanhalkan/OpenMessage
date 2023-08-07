@@ -17,16 +17,19 @@ const CfButton: React.FC<ButtonProps> = ({ buttonText, ...props }) => {
 const styles = StyleSheet.create({
   button: {
     width: '100%',
-    backgroundColor: 'purple',
+    backgroundColor: '#4B44D4',
     padding: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
+    borderRadius: 10,
     opacity: 1,
+    height:52
   },
   buttonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 16,
+    fontStyle: 'normal',
+    fontWeight: 'bold',
   },
 });
 

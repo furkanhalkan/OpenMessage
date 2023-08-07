@@ -11,6 +11,9 @@ const WelcomeScreen = ({ navigation }: { navigation: any }) => {
         style={styles.fimage}
         source={require('../assets/images1.jpg')}
       />
+      <Text style={styles.welcomeText}>
+        OpenMessage'ye Hoş Geldiniz.
+      </Text>
       <Text 
         style={styles.termsText}
         onPress={() => Linking.openURL('https://yourwebsite.com/termsandconditions')}
@@ -28,7 +31,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: 'black',
+    backgroundColor: '#fff',
   },
   fimage: {
     width: 290,
@@ -39,6 +42,13 @@ const styles = StyleSheet.create({
     color: 'blue',
     marginBottom: 32,
     textAlign: 'center',
+  },
+  welcomeText:{
+    color:'#4B44D4',
+    textAlign: 'center',
+    fontSize:24,
+    fontWeight: 'bold',
+    marginBottom:64
   }
 });
 

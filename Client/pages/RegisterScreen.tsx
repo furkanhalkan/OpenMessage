@@ -17,6 +17,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Yeni Hesap Oluştur</Text>
+      <Text style={styles.subTitle}>Yeni Hesabınızı Oluşturarak OpenMessage'ye Üye Olarak Çevrimiçi Arkadaşlarınızla Sohbet Edebilirsiniz.</Text>
       <CfInput
         value={username}
         onChangeText={text => setUsername(text)}
@@ -46,14 +47,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
     padding: 16,
   },
   headerText: {
-    color: '#fff',
-    fontSize: 20,
+    color: '#221F60',
+    fontSize: 24,
     marginBottom: 20,
+    fontWeight: 'bold'
   },
+  subTitle:{
+    color:'#918FB7',
+    textAlign: 'center',
+    marginBottom:20,
+    fontSize:14
+  }
 });
 
 export default RegisterScreen;

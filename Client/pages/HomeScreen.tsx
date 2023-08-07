@@ -30,8 +30,8 @@ export default function HomeScreen() {
 
             return <Icon name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: 'purple',
-          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: '#4B44D4',
+          tabBarInactiveTintColor: '#918FB7',
           tabBarStyle: {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
@@ -39,10 +39,10 @@ export default function HomeScreen() {
           },
         })}
       >
-        <Tab.Screen name="Messages" component={MessagesScreen} />
-        <Tab.Screen name="Friends" component={FriendsScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
-        <Tab.Screen name="Profile" component={ProfileScreen} />
+        <Tab.Screen name="Messages" component={MessagesScreen} options={{ headerShown: false }} />
+        <Tab.Screen name="Friends" component={FriendsScreen} options={{ headerShown: false }}/>
+        <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }}/>
+        <Tab.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }}/>
       </Tab.Navigator>
     </SafeAreaView>
   );

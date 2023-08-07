@@ -23,12 +23,13 @@ const EnablePermissionsScreen = ({ navigation }: { navigation: any }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>İzinleri Etkinleştir</Text>
+      <Text style={styles.title}>Bildirimler için iznin gerekiyor!</Text>
+      <Text style={styles.subTitle}>OpenMessage Sana yeni bir mesaj geldiğinde ve yeni güncellemelerin duyuruları için bildirim gönderir. Bu deneyimi tam anlamıyla yaşamak için cihazının bildirim ayarlarından OpenMessage’a izin ver.</Text>
       <Image
         style={styles.logo}
         source={require('../assets/notification.gif')}
       />
-      <CfButton onPress={handleButtonPress} buttonText="Devam Et" />
+      <CfButton onPress={handleButtonPress} buttonText="İzin Ver" />
     </View>
   );
 };
@@ -39,18 +40,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    backgroundColor:'black'
+    backgroundColor:'#fff'
   },
   title: {
     fontSize: 24,
     marginBottom: 32,
-    color: 'white'
+    color: '#221F60',
+    textAlign: 'center',
+    fontWeight: 'bold'
   },
   logo: {
     width: 150,
     height: 150,
     marginBottom: 32,
   },
+  subTitle:{
+    color:'#918FB7',
+    textAlign: 'center',
+    fontSize:14,
+    marginBottom:34
+  }
 });
 
 export default EnablePermissionsScreen;

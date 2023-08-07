@@ -26,14 +26,15 @@ const CfInput = ({ value, placeholder, onChangeText, keyboardType = 'default', s
 
 const styles = StyleSheet.create({
   input: {
-    height: 40,
-    borderColor: 'purple',
-    borderWidth: 1,
-    borderRadius: 10,
+    height: 42,
+    borderRadius: 16,
     padding: 10,
     width: '100%',
-    color: 'purple',
+    color: '#918FB7',
     marginBottom: 20,
+    textAlign: 'center',
+    fontSize:14,
+    backgroundColor:'#D9D9D9'
   },
 });
 
