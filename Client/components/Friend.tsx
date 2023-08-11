@@ -37,9 +37,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 10,
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: 'grey',
-    padding:7
+    backgroundColor:'#fff',
+    borderRadius:17,
+    padding:7,
+    marginTop:5,
+    marginLeft:10,
+    marginRight:10
   },
   avatarContainer: {
     marginRight: 10,
@@ -72,6 +75,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
+    color:'#221F60'
   },
 });
 

@@ -64,10 +64,13 @@ const Message: React.FC<MessageProps> = ({ user, latestMessage }) => {
       flexDirection: 'row',
       marginBottom: 10,
       alignItems: 'center',
-      borderBottomWidth: 1,
-      borderColor: 'grey',
+      backgroundColor:'#fff',
+      borderRadius:17,
       justifyContent: 'space-between',
       padding: 10,
+      marginTop:5,
+      marginLeft:10,
+      marginRight:10
     },
     avatarContainer: {
       position: 'relative',
@@ -92,7 +95,7 @@ const Message: React.FC<MessageProps> = ({ user, latestMessage }) => {
       height: 50,
       borderRadius: 25,
       marginRight: 10,
-      backgroundColor: '#ccc',
+      backgroundColor: '#4B44D4',
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -106,9 +109,10 @@ const Message: React.FC<MessageProps> = ({ user, latestMessage }) => {
     name: {
       fontWeight: 'bold',
       fontSize: 16,
+      color:'#221F60'
     },
     latestMessage: {
-      color: 'grey',
+      color: '#221F60',
       fontSize: 14,
     },
     timeContainer: {
@@ -116,10 +120,10 @@ const Message: React.FC<MessageProps> = ({ user, latestMessage }) => {
     },
     time: {
       fontSize: 12,
-      color: 'grey',
+      color: '#221F60',
     },
     notification: {
-      backgroundColor: 'purple',
+      backgroundColor: '#F8B851',
       borderRadius: 10,
       width: 20,
       height: 20,

@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator();
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1,backgroundColor:'#fff'}}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -35,7 +35,8 @@ export default function HomeScreen() {
           tabBarStyle: {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
-            paddingBottom:7
+            paddingBottom:7,
+            paddingTop:7
           },
         })}
       >
