@@ -1,8 +1,8 @@
-// ChatScreen.tsx
-import React from 'react';
-import { Image, ImageBackground, View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Image, ImageBackground, View, Text, TouchableOpacity, TextInput, StyleSheet, Animated } from 'react-native';
 import { GiftedChat, Bubble, InputToolbar, IMessage, Time } from 'react-native-gifted-chat';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import moment from 'moment';
 import { ChatScreenRouteProp, ChatScreenNavigationProp } from '../types';
 
 
@@ -37,8 +37,55 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
     },
   ]);
 
-  const onSend = (newMessages: IMessage[] = []) => {
-    setMessages(GiftedChat.append(messages, newMessages));
+  const renderTime = (date: Date | number) => {
+    const messageDate = moment(date);
+    const today = moment().startOf('day');
+  
+    if (messageDate.isSame(today, 'd')) {
+      return messageDate.format('HH:mm');
+    } else {
+      return messageDate.format('DD/MM/YYYY');
+    }
+  };
+
+  const [isInputFocused, setInputFocused] = useState(false);
+  const inputWidth = useRef(new Animated.Value(0)).current;
+
+  const handleInputFocus = () => {
+    setInputFocused(true);
+    Animated.timing(inputWidth, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleInputBlur = () => {
+    setInputFocused(false);
+    Animated.timing(inputWidth, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const [text, setText] = useState<string>("");
+
+  const onSendMessage = () => {
+    if (text.trim()) {
+      const newMessage: IMessage = {
+        _id: Math.random().toString(),
+        text: text,
+        createdAt: new Date(),
+        user: {
+          _id: 1,
+          name: "Kullanıcı",
+          avatar: 'https://placeimg.com/140/140/any',
+        },
+      };
+      setMessages((prevMessages) => [newMessage, ...prevMessages]);
+      setText("");
+    }
   };
 
   return (
@@ -48,7 +95,7 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
     >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
+          <Ionicons name="arrow-back" size={24} color="#221F60" />
         </TouchableOpacity>
         <Image
           style={styles.avatar}
@@ -59,73 +106,71 @@ const ChatScreen: React.FC<Props> = ({ route, navigation }) => {
           <Text style={styles.headerLastSeen}>Son görülme: {user.lastSeen}</Text>
         </View>
         <TouchableOpacity style={styles.callIcon}>
-          <Ionicons name="call" size={24} color="white" />
+          <Ionicons name="call" size={24} color="#221F60" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.videoIcon}>
-          <Ionicons name="videocam" size={24} color="white" />
+          <Ionicons name="videocam" size={24} color="#221F60" />
         </TouchableOpacity>
       </View>
 
-      <GiftedChat
-        messages={messages}
-        onSend={newMessages => onSend(newMessages)}
-        user={{ _id: 1 }}
-        renderBubble={(props) => {
-          return (
-            <Bubble
-              {...props}
-              wrapperStyle={{
-                right: {
-                  backgroundColor: 'green',
-                },
-                left: {
-                  backgroundColor: 'white',
-                },
-              }}
-            />
-          );
-        }}
-        renderTime={(props) => (
-          <Time {...props} textStyle={{ right: { color: 'black' }, left: { color: 'black' } }} />
-        )}
-        renderInputToolbar={(props) => (
-          <InputToolbar
-            {...props}
-            containerStyle={{ borderTopWidth: 1, borderTopColor: '#ccc' }}
-            renderComposer={() => (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TouchableOpacity>
-                  <Ionicons name="add-circle" size={24} color="green" style={{ marginHorizontal: 5 }} />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <Ionicons name="mic" size={24} color="green" style={{ marginHorizontal: 5 }} />
-                </TouchableOpacity>
-                <TextInput
-                  style={{ flex: 1, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 20, backgroundColor: 'white' }}
-                  placeholder="Type a message..."
-                />
-                <TouchableOpacity>
-                  <Ionicons name="send" size={24} color="green" style={{ marginHorizontal: 5 }} />
-                </TouchableOpacity>
-              </View>
-            )}
+      <View style={{flex: 1, padding: 10}}>
+        {/* Mesajları Gösterme */}
+        <View style={{flex: 1}}>
+          {messages.slice(0).reverse().map((msg, index) => (  
+          <View 
+            key={msg._id}
+            style={[
+              styles.messageContainer, 
+              msg.user._id === 1 ? styles.outgoingMessage : styles.incomingMessage 
+            ]}
+          >
+          <Text style={[
+              msg.user._id === 1 ? styles.outgoingMessagetxt : styles.incomingMessagetxt 
+            ]}>{msg.text}</Text>
+          <Text style={styles.timeText}>{renderTime(msg.createdAt)}</Text> 
+          </View>
+        ))}
+        </View>
+
+        {/* Mesaj Gönderme Alanı */}
+        <View style={[styles.composerContainer, isInputFocused ? {justifyContent: 'flex-end'} : {}]}>
+          { !isInputFocused && 
+            <>
+              <TouchableOpacity style={styles.roundedIcon}>
+                <Ionicons name="add" size={24} color="#221F60" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.roundedIcon}>
+                <Ionicons name="mic" size={24} color="#221F60" />
+              </TouchableOpacity>
+            </>
+          }
+          <TextInput 
+            style={[styles.input, isInputFocused ? {flex: 1} : {}]}
+            placeholder="Mesajınızı yazın..."
+            value={text}
+            onChangeText={setText}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
-        )}
-      />
+          <TouchableOpacity onPress={onSendMessage} style={styles.sendIcon}>
+            <Ionicons name="send" size={24} color="#221F60" />
+          </TouchableOpacity>
+        </View>
+      </View>
+      
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingTop: 20,
     paddingBottom: 10,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: '#fff',
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#ccc',
   },
   avatar: {
     width: 50,
@@ -135,21 +180,99 @@ const styles = StyleSheet.create({
   },
   headerTextContainer: {
     marginLeft: 10,
+    flex: 1,
   },
   headerName: {
-    color: 'white',
+    color: '#333',
     fontSize: 20,
+    fontWeight: 'bold',
   },
   headerLastSeen: {
-    color: 'white',
+    color: '#888',
     fontSize: 14,
   },
   callIcon: {
-    marginLeft: 'auto',
+    backgroundColor: '#F5F6FA',
+    borderRadius: 20,
+    padding: 10,
+    marginHorizontal: 5,
   },
   videoIcon: {
-    marginLeft: 10,
+    backgroundColor: '#F5F6FA',
+    borderRadius: 20,
+    padding: 10,
+    marginHorizontal: 5,
   },
+  background: {
+    flex: 1,
+  },
+  inputToolbar: {
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+  },
+  inputAnimatedContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 20,
+    backgroundColor: 'white',
+    flex: 1,
+  },
+  messageContainer: {
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+    maxWidth: '70%',
+    alignSelf: 'flex-start',
+  },
+  outgoingMessage: {
+    backgroundColor: '#221F60',
+    alignSelf: 'flex-end',
+  },
+  incomingMessage: {
+    backgroundColor: '#FFFFFF',
+  },
+  composerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+    padding: 5,
+  },
+  input: {
+    borderRadius: 20,
+    padding: 10,
+    paddingHorizontal: 20,
+    backgroundColor: 'white',
+    fontSize: 16,
+    marginHorizontal: 5,
+    flex: 0.8,
+  },
+  roundedIcon: {
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    marginHorizontal: 5,
+  },
+  sendIcon: {
+    paddingHorizontal: 10,
+  },
+  timeText: {
+    fontSize: 10,
+    color: '#888',
+    marginTop: 5,
+    alignSelf: 'flex-end'
+  },
+  outgoingMessagetxt:{
+    color:'#fff'
+  },
+  incomingMessagetxt:{
+    color:'#000'
+  }
 });
 
 export default ChatScreen;
