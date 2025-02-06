@@ -1,0 +1,207 @@
+name: CI/CD Pipeline
+
+on:
+  # dev branch'ine her commit'te çalışır
+  push:
+    branches: [ dev ]
+  # main branch'e gelen pull request'lerde çalışır
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  issues: write    # Issue'lara yorum yapma izni
+  pull-requests: write  # PR'lara yorum yapma izni
+
+jobs:
+  test-and-lint:
+    name: 🧪 Test and Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Corepack'i etkinleştir
+      - name: 🔧 Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.4.0 --activate
+
+      - name: 📦 Install dependencies
+        run: yarn install
+
+      - name: 🔍 Run ESLint
+        id: lint
+        run: |
+          LINT_OUTPUT=$(yarn redwood lint 2>&1) || true
+          echo "::set-output name=stdout::$LINT_OUTPUT"
+
+      - name: 💬 Comment Lint Results
+        if: github.event_name == 'pull_request' && steps.lint.outcome == 'failure'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = process.env.LINT_OUTPUT || '';
+            const summary = output.split('\n')
+              .filter(line => line.includes('error') || line.includes('warning'))
+              .slice(0, 50)
+              .join('\n');
+
+            const body = `#### ESLint Sonuçları 🔍
+            \`\`\`
+            ${summary}
+            ... ve ${output.split('\n').length - 50} satır daha
+            \`\`\`
+            `;
+
+            if (context.payload.pull_request) {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }
+        env:
+          LINT_OUTPUT: ${{ steps.lint.outputs.stdout }}
+
+      - name: ✅ Run tests
+        run: yarn rw test
+        continue-on-error: true
+        id: test
+
+      - name: 💬 Comment Test Results
+        if: github.event_name == 'pull_request' && steps.test.outcome == 'failure'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Test Sonuçları ✅
+            \`\`\`
+            ${process.env.TEST_OUTPUT}
+            \`\`\`
+            `;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+        env:
+          TEST_OUTPUT: ${{ steps.test.outputs.stdout }}
+
+  security:
+    name: 🔒 Security Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🔍 Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        id: snyk
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+      - name: 💬 Comment Security Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        env:
+          SNYK_OUTCOME: ${{ steps.snyk.outcome }}
+          SECURITY_OUTPUT: ${{ steps.snyk.outputs.stdout }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const snykOutput = process.env.SECURITY_OUTPUT || 'No vulnerabilities found';
+            const snykOutcome = process.env.SNYK_OUTCOME;
+
+            const body = `## 🔒 Güvenlik Taraması Sonuçları
+
+            ### Snyk Güvenlik Taraması
+            \`\`\`
+            ${snykOutput}
+            \`\`\`
+
+            ${snykOutcome === 'failure' ? '⚠️ Yüksek öncelikli güvenlik açıkları bulundu!' : '✅ Önemli bir güvenlik açığı bulunamadı.'}
+            `;
+
+            if (context.payload.pull_request) {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }
+
+      - name: 🔍 Run CodeQL Analysis
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+
+      - name: 🔍 Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        continue-on-error: true
+        id: codeql
+
+      - name: 💬 Comment CodeQL Results
+        if: github.event_name == 'pull_request' && steps.codeql.outcome == 'failure'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const codeqlOutput = process.env.CODEQL_OUTPUT || 'No issues found';
+            const body = `## 🔍 CodeQL Analiz Sonuçları
+
+            \`\`\`
+            ${codeqlOutput}
+            \`\`\`
+
+            ⚠️ Kod kalitesi sorunları tespit edildi!
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+        env:
+          CODEQL_OUTPUT: ${{ steps.codeql.outputs.stdout }}
+
+  notify:
+    name: 📢 Notify
+    needs: [test-and-lint, security]
+    runs-on: ubuntu-latest
+    if: always() && github.ref == 'refs/heads/dev'
+
+    steps:
+      - name: 📧 Send notification
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: 'GitHub Actions'
+          SLACK_ICON: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'
+          SLACK_TITLE: '🔄 Pipeline Durumu'
+          SLACK_MESSAGE: |
+            *Branch:* `${{ github.ref_name }}`
+            *Commit:* <${{ github.event.head_commit.url }}|${{ github.event.head_commit.message }}>
+            *Yazar:* ${{ github.event.head_commit.author.name }}
+
+            *Test ve Lint:* ${{ needs.test-and-lint.result == 'success' && '✅' || '❌' }}
+            *Güvenlik Kontrolü:* ${{ needs.security.result == 'success' && '✅' || '❌' }}
+          SLACK_FOOTER: '${{ github.repository }}'
+          SLACK_COLOR: ${{ job.status == 'success' && 'good' || job.status == 'failure' && 'danger' || 'warning' }}
+
